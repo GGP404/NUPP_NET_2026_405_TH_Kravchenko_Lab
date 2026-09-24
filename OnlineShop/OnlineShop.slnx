@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="OnlineShop.Common/OnlineShop.Common.csproj" />
+  <Project Path="OnlineShop.Console/OnlineShop.Console.csproj" />
+  <Project Path="OnlineShop/OnlineShop.csproj" Id="1815bc19-9426-4170-8bf5-02c7dc9bb1ce" />
+</Solution>
