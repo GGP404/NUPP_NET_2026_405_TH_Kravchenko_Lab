@@ -1,0 +1,11 @@
+[
+  {
+    "$type": "phone",
+    "Brand": "Apple",
+    "Memory": 128,
+    "OperatingSystem": "iOS",
+    "Id": "9f6201cb-c309-460f-a620-b4db8bcb0c83",
+    "Name": "iPhone 15",
+    "Price": 28000
+  }
+]
