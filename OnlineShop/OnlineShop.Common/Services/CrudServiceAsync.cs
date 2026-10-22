@@ -7,123 +7,157 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using OnlineShop.Common.Models;
+using OnlineShop.Common.Repositories;
 
 namespace OnlineShop.Common.Services
 {
     public class CrudServiceAsync<T> : ICrudServiceAsync<T>
-        where T : Product
+        where T : class
     {
-        // Thread-safe dictionary for elements
+        // Keeps the original in-memory storage mode available for earlier laboratory work.
         private readonly ConcurrentDictionary<Guid, T> _items = new();
 
-        // Semaphore for asynchronous file save synchronization
+        // Uses the repository when the service is configured for database access.
+        private readonly IRepository<T>? _repository;
+
+        // Serializes asynchronous writes to the original JSON storage.
         private readonly SemaphoreSlim _saveSemaphore = new(1, 1);
 
-        // File path property
+        // Exposes the file path used by the original JSON storage mode.
         public string FilePath { get; }
 
-        // Constructor
+        // Creates a service that uses the original JSON-oriented storage behavior.
         public CrudServiceAsync(string filePath = "products-lab2.json")
         {
             FilePath = filePath;
         }
 
-        // Create element asynchronously
-        public Task<bool> CreateAsync(T element)
+        // Creates a service that delegates data operations to an injected repository.
+        public CrudServiceAsync(IRepository<T> repository)
         {
-            // Validation
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            FilePath = string.Empty;
+        }
+
+        // Adds an entity to the selected storage mode.
+        public async Task<bool> CreateAsync(T element)
+        {
             ArgumentNullException.ThrowIfNull(element);
 
-            // Thread-safe addition
-            bool result = _items.TryAdd(element.Id, element);
+            if (_repository is not null)
+            {
+                Guid id = GetEntityId(element);
+                if (await _repository.GetByGuidIdAsync(id) is not null)
+                    return false;
 
-            return Task.FromResult(result);
+                await _repository.AddAsync(element);
+                await SaveAsync();
+                return true;
+            }
+
+            return _items.TryAdd(GetEntityId(element), element);
         }
 
-        // Read element by ID asynchronously
-        public Task<T> ReadAsync(Guid id)
+        // Reads a single entity by its GUID identifier.
+        public async Task<T> ReadAsync(Guid id)
         {
-            // Try to get element by key
+            if (_repository is not null)
+            {
+                return (await _repository.GetByGuidIdAsync(id))!;
+            }
+
             _items.TryGetValue(id, out T? element);
-
-            return Task.FromResult(element!);
+            return element!;
         }
 
-        // Read all elements asynchronously
-        public Task<IEnumerable<T>> ReadAllAsync()
+        // Reads all entities from the selected storage mode.
+        public async Task<IEnumerable<T>> ReadAllAsync()
         {
-            // Create a snapshot of values
-            IEnumerable<T> result = _items.Values.ToList();
+            if (_repository is not null)
+            {
+                return await _repository.GetAllAsync();
+            }
 
-            return Task.FromResult(result);
+            return _items.Values.ToList();
         }
 
-        // Read elements with pagination asynchronously
-        public Task<IEnumerable<T>> ReadAllAsync(int page, int amount)
+        // Reads a page of entities ordered by their GUID identifiers.
+        public async Task<IEnumerable<T>> ReadAllAsync(int page, int amount)
         {
-            // Validation
             if (page < 1)
                 throw new ArgumentOutOfRangeException(nameof(page));
 
             if (amount < 1)
                 throw new ArgumentOutOfRangeException(nameof(amount));
 
-            // Pagination query
-            IEnumerable<T> result = _items.Values
-                .OrderBy(x => x.Id)
+            IEnumerable<T> source = _repository is not null
+                ? await _repository.GetAllAsync()
+                : _items.Values.ToList();
+
+            return source
+                .OrderBy(GetEntityId)
                 .Skip((page - 1) * amount)
                 .Take(amount)
                 .ToList();
-
-            return Task.FromResult(result);
         }
 
-        // Update element asynchronously
-        public Task<bool> UpdateAsync(T element)
+        // Updates an existing entity in the selected storage mode.
+        public async Task<bool> UpdateAsync(T element)
         {
-            // Validation
             ArgumentNullException.ThrowIfNull(element);
+            Guid id = GetEntityId(element);
 
-            // Check if element exists
-            if (!_items.TryGetValue(element.Id, out T? oldElement))
-                return Task.FromResult(false);
+            if (_repository is not null)
+            {
+                T? existing = await _repository.GetByGuidIdAsync(id);
+                if (existing is null)
+                    return false;
 
-            // Thread-safe update
-            bool result = _items.TryUpdate(
-                element.Id,
-                element,
-                oldElement);
+                await _repository.Update(element);
+                await SaveAsync();
+                return true;
+            }
 
-            return Task.FromResult(result);
+            if (!_items.TryGetValue(id, out T? oldElement))
+                return false;
+
+            return _items.TryUpdate(id, element, oldElement);
         }
 
-        // Remove element asynchronously
-        public Task<bool> RemoveAsync(T element)
+        // Removes an existing entity from the selected storage mode.
+        public async Task<bool> RemoveAsync(T element)
         {
-            // Validation
             ArgumentNullException.ThrowIfNull(element);
+            Guid id = GetEntityId(element);
 
-            // Thread-safe removal
-            bool result = _items.TryRemove(
-                element.Id,
-                out _);
+            if (_repository is not null)
+            {
+                T? existing = await _repository.GetByGuidIdAsync(id);
+                if (existing is null)
+                    return false;
 
-            return Task.FromResult(result);
+                await _repository.Delete(existing);
+                await SaveAsync();
+                return true;
+            }
+
+            return _items.TryRemove(id, out _);
         }
 
-        // Save elements to JSON file asynchronously
+        // Saves changes to the repository or writes the in-memory collection to JSON.
         public async Task<bool> SaveAsync()
         {
-            // Wait for lock
+            if (_repository is not null)
+            {
+                await _repository.SaveChangesAsync();
+                return true;
+            }
+
             await _saveSemaphore.WaitAsync();
 
             try
             {
-                // Snapshot collection
                 List<T> snapshot = _items.Values.ToList();
-
-                // Serialize to JSON
                 string json = JsonSerializer.Serialize(
                     snapshot,
                     new JsonSerializerOptions
@@ -131,41 +165,54 @@ namespace OnlineShop.Common.Services
                         WriteIndented = true
                     });
 
-                // Path processing
                 string fullPath = Path.GetFullPath(FilePath);
-
                 string? directory = Path.GetDirectoryName(fullPath);
 
-                // Ensure directory exists
                 if (!string.IsNullOrWhiteSpace(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
 
-                // Write to file asynchronously
                 await File.WriteAllTextAsync(fullPath, json);
-
                 return true;
             }
             finally
             {
-                // Release lock
                 _saveSemaphore.Release();
             }
         }
 
-        // Get typed enumerator (IEnumerable implementation)
+        // Enumerates entities from either the repository or the original in-memory collection.
         public IEnumerator<T> GetEnumerator()
         {
-            return _items.Values
-                .ToList()
-                .GetEnumerator();
+            if (_repository is not null)
+            {
+                return _repository.GetAllAsync()
+                    .GetAwaiter()
+                    .GetResult()
+                    .GetEnumerator();
+            }
+
+            return _items.Values.ToList().GetEnumerator();
         }
 
-        // Get non-typed enumerator
+        // Provides the non-generic enumerator required by IEnumerable.
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        // Reads the GUID key from entities that expose an Id property.
+        private static Guid GetEntityId(T element)
+        {
+            var idProperty = element.GetType().GetProperty("Id");
+            if (idProperty?.PropertyType != typeof(Guid) || idProperty.GetValue(element) is not Guid id)
+            {
+                throw new InvalidOperationException(
+                    $"Type '{element.GetType().Name}' must expose a GUID Id property.");
+            }
+
+            return id;
         }
     }
 }
