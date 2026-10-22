@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -154,6 +154,9 @@ namespace OnlineShop.ConsoleApp
             // Static method
             Console.WriteLine(
                 $"Новий ID: {Product.GenerateId()}");
+
+            // Runs the database-backed workflow for the third laboratory assignment.
+            await Lab3Runner.RunAsync();
 
             Console.ReadKey();
             
