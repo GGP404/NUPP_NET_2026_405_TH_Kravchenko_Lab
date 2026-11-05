@@ -1,0 +1,25 @@
+@model IEnumerable<ProductModel>
+@{
+    ViewData["Title"] = "Товари";
+}
+<div class="page-heading">
+    <div><p class="eyebrow">Каталог</p><h1>Товари</h1><p class="muted">Товари, що зберігаються в БД лабораторної №3.</p></div>
+    <a class="button" asp-action="Create">+ Додати товар</a>
+</div>
+<div class="table-wrap">
+<table>
+    <thead><tr><th>Назва</th><th>Тип</th><th>Ціна</th><th>Дії</th></tr></thead>
+    <tbody>
+    @foreach (var product in Model)
+    {
+        <tr>
+            <td>@product.Name</td>
+            <td>@(product is PhoneModel ? "Телефон" : product is LaptopModel ? "Ноутбук" : "Товар")</td>
+            <td>@product.Price.ToString("N2") грн</td>
+            <td class="row-actions"><a asp-action="Details" asp-route-id="@product.Id">Перегляд</a><a asp-action="Edit" asp-route-id="@product.Id">Змінити</a><a class="danger-link" asp-action="Delete" asp-route-id="@product.Id">Видалити</a></td>
+        </tr>
+    }
+    @if (!Model.Any()) { <tr><td colspan="4" class="empty">Поки що немає товарів.</td></tr> }
+    </tbody>
+</table>
+</div>

@@ -1,0 +1,9 @@
+@model ProductModel
+@{
+    ViewData["Title"] = "Видалити товар";
+}
+<section class="panel narrow">
+    <p class="eyebrow">Підтвердження</p><h1>Видалити товар?</h1>
+    <p>Ви збираєтеся видалити <strong>@Model.Name</strong> за ціною @Model.Price.ToString("N2") грн.</p>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post"><div class="actions"><button class="button button-danger" type="submit">Видалити</button><a class="button button-light" asp-action="Index">Скасувати</a></div></form>
+</section>
