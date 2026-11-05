@@ -1,0 +1,14 @@
+@model CustomerFormModel
+@{
+    ViewData["Title"] = "Додати покупця";
+}
+<section class="panel narrow">
+    <h1>Додати покупця</h1>
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="validation"></div>
+        <label asp-for="Name"></label><input asp-for="Name" /><span asp-validation-for="Name" class="validation"></span>
+        <label asp-for="Email"></label><input asp-for="Email" type="email" /><span asp-validation-for="Email" class="validation"></span>
+        <label asp-for="Age"></label><input asp-for="Age" type="number" min="1" max="120" /><span asp-validation-for="Age" class="validation"></span>
+        <div class="actions"><button class="button" type="submit">Зберегти</button><a class="button button-light" asp-action="Index">Скасувати</a></div>
+    </form>
+</section>

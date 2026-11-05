@@ -1,0 +1,9 @@
+@model CustomerModel
+@{
+    ViewData["Title"] = "Видалити покупця";
+}
+<section class="panel narrow">
+    <p class="eyebrow">Підтвердження</p><h1>Видалити покупця?</h1>
+    <p>Ви збираєтеся видалити <strong>@Model.Name</strong> (@Model.Email). Пов’язані замовлення також можуть бути видалені згідно з правилами зв’язків БД.</p>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post"><div class="actions"><button class="button button-danger" type="submit">Видалити</button><a class="button button-light" asp-action="Index">Скасувати</a></div></form>
+</section>

@@ -1,0 +1,20 @@
+@model IEnumerable<CustomerModel>
+@{
+    ViewData["Title"] = "Покупці";
+}
+<div class="page-heading">
+    <div><p class="eyebrow">Клієнтська база</p><h1>Покупці</h1><p class="muted">Дані клієнтів із БД лабораторної №3.</p></div>
+    <a class="button" asp-action="Create">+ Додати покупця</a>
+</div>
+<div class="table-wrap">
+<table>
+    <thead><tr><th>Ім’я</th><th>Email</th><th>Вік</th><th>Дії</th></tr></thead>
+    <tbody>
+    @foreach (var customer in Model)
+    {
+        <tr><td>@customer.Name</td><td>@customer.Email</td><td>@customer.Age</td><td class="row-actions"><a asp-action="Details" asp-route-id="@customer.Id">Перегляд</a><a asp-action="Edit" asp-route-id="@customer.Id">Змінити</a><a class="danger-link" asp-action="Delete" asp-route-id="@customer.Id">Видалити</a></td></tr>
+    }
+    @if (!Model.Any()) { <tr><td colspan="4" class="empty">Поки що немає покупців.</td></tr> }
+    </tbody>
+</table>
+</div>

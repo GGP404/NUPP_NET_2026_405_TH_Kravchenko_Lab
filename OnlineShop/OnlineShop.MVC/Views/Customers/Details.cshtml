@@ -1,0 +1,9 @@
+@model CustomerModel
+@{
+    ViewData["Title"] = "Дані покупця";
+}
+<section class="panel narrow">
+    <p class="eyebrow">Картка покупця</p><h1>@Model.Name</h1>
+    <dl class="details-list"><dt>Ідентифікатор</dt><dd>@Model.Id</dd><dt>Email</dt><dd>@Model.Email</dd><dt>Вік</dt><dd>@Model.Age</dd><dt>Замовлень</dt><dd>@(Model.Orders?.Count ?? 0)</dd></dl>
+    <div class="actions"><a class="button" asp-action="Edit" asp-route-id="@Model.Id">Редагувати</a><a class="button button-light" asp-action="Index">Назад</a></div>
+</section>
