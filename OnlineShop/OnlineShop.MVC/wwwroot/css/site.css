@@ -1,0 +1,47 @@
+:root { color-scheme: light; --ink: #17212b; --muted: #637381; --line: #e2e8ee; --surface: #fff; --canvas: #f5f7fa; --accent: #2457c5; --accent-dark: #1b449d; --danger: #b42318; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1rem max(1.25rem, calc((100vw - 1120px) / 2)); background: #142743; color: #fff; }
+.brand { color: #fff; font-weight: 800; font-size: 1.25rem; letter-spacing: .02em; }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 1.1rem; }
+.topbar nav a { color: #e7efff; font-size: .95rem; }
+.container { width: min(1120px, calc(100% - 2rem)); margin: 2rem auto 4rem; min-height: 60vh; }
+.hero { padding: clamp(2rem, 5vw, 4.25rem); border-radius: 22px; background: linear-gradient(125deg, #e9f0ff, #fff 65%); border: 1px solid #dce6f8; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.15; margin: .15rem 0 .8rem; }
+h2 { margin-top: 0; }
+.hero > p:not(.eyebrow) { max-width: 720px; color: var(--muted); font-size: 1.08rem; }
+.eyebrow { text-transform: uppercase; letter-spacing: .13em; color: var(--accent); font-weight: 750; font-size: .75rem; margin: 0 0 .55rem; }
+.actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; }
+.button { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--accent); border-radius: 9px; padding: .65rem 1rem; background: var(--accent); color: white; font: inherit; font-weight: 650; cursor: pointer; }
+.button:hover { background: var(--accent-dark); color: #fff; text-decoration: none; }
+.button-light { background: #fff; border-color: var(--line); color: var(--ink); }
+.button-light:hover { background: #f5f7fa; color: var(--ink); }
+.button-danger { background: var(--danger); border-color: var(--danger); }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.25rem 0; }
+.stat, .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 1.5rem; box-shadow: 0 3px 12px #12233b08; }
+.stat span, .muted { color: var(--muted); }
+.stat strong { display: block; font-size: 2.2rem; line-height: 1.2; margin: .35rem 0 .75rem; }
+.stat a { font-weight: 650; }
+.page-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.page-heading p { margin-bottom: 0; }
+.table-wrap { overflow-x: auto; background: #fff; border: 1px solid var(--line); border-radius: 14px; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: .95rem 1rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: #f7f9fc; font-size: .85rem; color: #475569; }
+tr:last-child td { border-bottom: 0; }
+.row-actions { white-space: nowrap; display: flex; gap: .7rem; }
+.danger-link { color: var(--danger); }
+.empty { color: var(--muted); text-align: center; padding: 2rem; }
+.narrow { max-width: 720px; margin-inline: auto; }
+form { display: grid; gap: .5rem; }
+label { margin-top: .6rem; font-weight: 650; }
+input { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: .7rem .8rem; font: inherit; background: #fff; }
+input:focus { outline: 3px solid #2457c522; border-color: var(--accent); }
+.validation { color: var(--danger); font-size: .9rem; }
+.details-list { display: grid; grid-template-columns: minmax(120px, .4fr) 1fr; gap: .65rem 1rem; overflow-wrap: anywhere; }
+.details-list dt { color: var(--muted); }
+.details-list dd { margin: 0; font-weight: 600; }
+.footer { padding: 1.5rem; text-align: center; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
+@media (max-width: 700px) { .topbar, .page-heading { align-items: flex-start; flex-direction: column; } .stats { grid-template-columns: 1fr; } .row-actions { flex-wrap: wrap; white-space: normal; } .details-list { grid-template-columns: 1fr; gap: .15rem; } .details-list dd { margin-bottom: .7rem; } }
