@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OnlineShop</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" asp-controller="Home" asp-action="Index">OnlineShop</a>
+    <nav>
+        <a asp-controller="Products" asp-action="Index">Товари</a>
+        <a asp-controller="Customers" asp-action="Index">Покупці</a>
+        <a href="http://localhost:5101/swagger" target="_blank" rel="noreferrer">REST API / Swagger</a>
+    </nav>
+</header>
+<main class="container">
+    @RenderBody()
+</main>
+<footer class="footer">Лабораторна робота №4 · ASP.NET Core MVC + EF Core</footer>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
