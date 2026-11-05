@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Головна";
+}
+<section class="hero">
+    <p class="eyebrow">OnlineShop · Lab 4</p>
+    <h1>Керування інтернет-магазином</h1>
+    <p>Вебінтерфейс працює з контекстом і моделями з лабораторної роботи №3 та тією самою SQLite-базою.</p>
+    <div class="actions">
+        <a class="button" asp-controller="Products" asp-action="Index">Переглянути товари</a>
+        <a class="button button-light" asp-controller="Customers" asp-action="Index">Переглянути покупців</a>
+    </div>
+</section>
+<div class="stats">
+    <article class="stat"><span>Товари в базі</span><strong>@ViewBag.ProductCount</strong><a asp-controller="Products" asp-action="Index">Керувати товарами →</a></article>
+    <article class="stat"><span>Покупці в базі</span><strong>@ViewBag.CustomerCount</strong><a asp-controller="Customers" asp-action="Index">Керувати покупцями →</a></article>
+</div>
+<section class="panel">
+    <h2>Що реалізовано</h2>
+    <p>CRUD-сторінки для товарів і покупців: створення, перегляд, редагування та видалення. Для REST API доступні окремі контролери й інтерактивна документація Swagger.</p>
+</section>
